@@ -1,47 +1,32 @@
-# LogrageActiveJob
+# Lograge::ActiveJob
 
-Lograging ActiveJob logs
+You get a single line with all the important information, like this:
+```log
+ "job_class=UserJob job_id=2692c069-8e57-453a-9bbd-6bbe094163ca adapter=Async queue_name=default args=args, gid://ExampleApp/UserModel/user-id-42 status=performed duration=1000.0ms"
+```
 
 ## Installation
 
-Add this line to your application's Gemfile:
+In your Gemfile:
 
 ```ruby
 gem 'lograge'
-gem 'lograge_active_job'
+gem 'lograge-active-job'
 ```
 
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install lograge_active_job
-
-## Custom setup
-### Output file path
-You can configure output file path for lograge_active_job. (default is the path set in lograge)
-
+Enable it in an initializer or the relevant environment config:
 ```ruby
 # config/initializers/lograge.rb
+# OR
+# config/environments/production.rb
 Rails.application.configure do
-  config.lograge.active_job.logger = ActiveSupport::Logger.new(Rails.root.join("log/active_job.log"))
+  config.lograge.active_job.enabled = true
 end
 ```
-
-### Additional fields
-You can configure additional fields, which will be logged for every exception.
-
+To further clean up your logging, you can also tell Lograge to skip log messages meeting given criteria. You can skip log messages generated from ActionMailer events:
 ```ruby
-# config/initializers/lograge.rb
 Rails.application.configure do
-  config.lograge.active_job.custom_options = lambda do |event|
-    {
-      event_time: event.time.iso8601,
-      status: event.payload[:exception_object].blank? ? 200 : 500
-    }
-  end
+  config.lograge.active_job.ignore_events = ["perform_start"]
 end
 ```
 ## License

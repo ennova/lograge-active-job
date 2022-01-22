@@ -2,15 +2,14 @@
 
 require "active_support/log_subscriber"
 
-module LogrageActiveJob
-  module LogSubscribers
-    class Base < ActiveSupport::LogSubscriber
+module Lograge
+  module ActiveJob
+    class BaseLogSubscriber < ActiveSupport::LogSubscriber
       protected
 
       def processing_data(event, data)
         return if event_ignore?(event.name)
 
-        data.merge!(custom_options(event))
         logger.send(Lograge.log_level, Lograge.formatter.call(data))
       end
 
@@ -34,7 +33,7 @@ module LogrageActiveJob
       end
 
       def args_info(args)
-        Array(args).any? ? args.map { |arg| format(arg).inspect }.join(", ") : []
+        Array(args).any? ? args.flat_map { |arg| format(arg) }.join(", ") : ""
       end
 
       def format(arg)
@@ -53,15 +52,15 @@ module LogrageActiveJob
       end
 
       def event_ignore?(name)
-        !!LogrageActiveJob.ignore_events.index(name.split(".").first)
+        !!Array(Lograge::ActiveJob.ignore_events).index(name.split(".").first)
       end
 
       def logger
-        LogrageActiveJob.logger.presence || Lograge.logger.presence || super
+        Lograge::ActiveJob.logger.presence || Lograge.logger.presence || super
       end
 
       def custom_options(event)
-        LogrageActiveJob.custom_options(event) || {}
+        Lograge::ActiveJob.custom_options(event) || {}
       end
 
       def parse_time(time)

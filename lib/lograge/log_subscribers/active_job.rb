@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-module LogrageActiveJob
+module Lograge
   module LogSubscribers
-    class ActiveJob < Base
+    class ActiveJob < Lograge::ActiveJob::BaseLogSubscriber
       def enqueue(event)
         payload = event.payload
         job = payload[:job]
@@ -23,7 +23,9 @@ module LogrageActiveJob
         processing_data event,
           initial_data(event).tap { |data|
             data[:status] = :performing
-            data[:enqueued_at] = parse_time(job.enqueued_at)
+            unless Lograge::ActiveJob.rails_version_lt_6_1?
+              data[:enqueued_at] = parse_time(job.enqueued_at)
+            end
           }
       end
 

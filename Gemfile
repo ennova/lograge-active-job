@@ -1,11 +1,16 @@
+# frozen_string_literal: true
+
 source "https://rubygems.org"
 
-git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
-
-# Specify your gem's dependencies in lograge_activejob.gemspec
+# Specify your gem's dependencies in lograge-active-job.gemspec
 gemspec
 
-group :test do
-  gem 'pry'
-  gem 'activejob', '~> 5'
+group :development do
+  gem "rspec", "~> 3.0"
+  gem "simplecov", "~> 0.12"
+  gem "pry"
+end
+
+group :linting do
+  gem "standard", "~> 1.7"
 end

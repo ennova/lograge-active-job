@@ -11,6 +11,10 @@ group :development do
   gem "pry"
 end
 
+group :test do
+  gem "timecop"
+end
+
 group :linting do
   gem "standard", "~> 1.7"
 end

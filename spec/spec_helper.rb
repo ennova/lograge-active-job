@@ -2,6 +2,7 @@ require "bundler/setup"
 require "lograge/active_job"
 require "lograge"
 require "global_id"
+require "timecop"
 
 GlobalID.app = "ExampleApp"
 
@@ -15,5 +16,9 @@ RSpec.configure do |config|
 
   config.expect_with :rspec do |c|
     c.syntax = :expect
+  end
+
+  config.after do
+    Timecop.return
   end
 end

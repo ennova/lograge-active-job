@@ -94,6 +94,8 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
     include_examples "expect default fields with status", "performing"
 
     it "includes enqueued_at" do
+      skip 'not supported' if Lograge::ActiveJob.rails_version_lt_6_1?
+
       expect(log_output.string).to include("enqueued_at=2001-02-03T04:05:06Z")
     end
   end

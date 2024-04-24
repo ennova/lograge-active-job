@@ -64,7 +64,16 @@ module Lograge
       end
 
       def parse_time(time)
-        Time.parse(time).utc if time
+        time = case time
+        when String
+          Time.parse(time).utc
+        when Numeric
+          Time.at(time).utc
+        else
+          time
+        end
+
+        time.utc.iso8601 if time
       end
     end
   end

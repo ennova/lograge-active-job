@@ -43,12 +43,17 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
     )
   end
   let(:payload) { {adapter: ActiveJob::QueueAdapters::AsyncAdapter.new, job: job} }
-  let(:job) { UserJob.perform_later("args", model) }
+  let(:job) { UserJob.set(wait_until: Time.parse('2000-01-02T03:04:05Z')).perform_later("args", model) }
   let(:model) { UserModel.new }
 
   before do
     Lograge.logger = logger
     Lograge.formatter = Lograge::Formatters::KeyValue.new
+
+    Timecop.freeze '2001-02-03T04:05:06Z' do
+      job_data = job.serialize
+      job.deserialize(job_data)
+    end
   end
 
   shared_examples "expect default fields with status" do |status|
@@ -87,12 +92,28 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
     before { subscriber.perform_start(event) }
 
     include_examples "expect default fields with status", "performing"
+
+    it "includes enqueued_at" do
+      expect(log_output.string).to include("enqueued_at=2001-02-03T04:05:06Z")
+    end
   end
 
   context "when enqueued an action with lograge output" do
     before { subscriber.enqueue(event) }
 
     include_examples "expect default fields with status", "enqueued"
+
+    it "includes scheduled_at" do
+      expect(log_output.string).to include("scheduled_at=2000-01-02T03:04:05Z")
+    end
+
+    context 'without scheduled_at' do
+      let(:job) { super().tap { |job| job.scheduled_at = nil } }
+
+      it "does not include scheduled_at" do
+        expect(log_output.string).to_not include("scheduled_at=")
+      end
+    end
   end
 
   context "when enqueue retried an action with lograge output" do

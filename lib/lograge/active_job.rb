@@ -28,9 +28,9 @@ module Lograge
       def fetch_subscriber_class
         @fetch_subscriber_class ||=
           if rails_version_lt_6_1?
-            ActiveJob::Logging::LogSubscriber
+            ::ActiveJob::Logging::LogSubscriber
           else
-            ActiveJob::LogSubscriber
+            ::ActiveJob::LogSubscriber
           end
       end
 

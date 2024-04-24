@@ -5,6 +5,8 @@ require "logger"
 require "active_job"
 
 class UserJob < ActiveJob::Base
+  def perform(*)
+  end
 end
 
 class UserModel
@@ -18,6 +20,8 @@ class UserModel
     "user-id-42"
   end
 end
+
+Lograge::ActiveJob.remove_existing_log_subscriptions
 
 RSpec.describe Lograge::LogSubscribers::ActiveJob do
   let(:log_output) { StringIO.new }
@@ -39,7 +43,7 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
     )
   end
   let(:payload) { {adapter: ActiveJob::QueueAdapters::AsyncAdapter.new, job: job} }
-  let(:job) { UserJob.new("args", model) }
+  let(:job) { UserJob.perform_later("args", model) }
   let(:model) { UserModel.new }
 
   before do

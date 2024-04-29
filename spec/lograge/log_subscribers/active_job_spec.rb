@@ -142,7 +142,7 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
     end
   end
 
-  context "when enqueue retried an action with lograge output" do
+  context "when discard an action with lograge output" do
     before { subscriber.discard(event) }
 
     include_examples "expect default fields with status", "failed"

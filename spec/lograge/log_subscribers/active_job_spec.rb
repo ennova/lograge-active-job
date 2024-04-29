@@ -142,6 +142,12 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
     end
   end
 
+  context "when retry stopped an action with lograge output" do
+    before { subscriber.retry_stopped(event) }
+
+    include_examples "expect default fields with status", "failed"
+  end
+
   context "when discard an action with lograge output" do
     before { subscriber.discard(event) }
 

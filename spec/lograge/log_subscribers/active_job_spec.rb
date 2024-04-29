@@ -90,6 +90,14 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
     it "includes duration" do
       expect(log_output.string).to include("duration=1000.00")
     end
+
+    context 'with exception_object' do
+      let(:payload) { super().merge(exception_object: RuntimeError.new("test error")) }
+
+      it "includes status" do
+        expect(log_output.string).to include("status=failed")
+      end
+    end
   end
 
   context "when perform started an action with lograge output" do

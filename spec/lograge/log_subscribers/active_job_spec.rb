@@ -160,7 +160,7 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
     let(:event_name) { :retry_stopped }
     before { subscriber.retry_stopped(event) }
 
-    include_examples "expect default fields with status", "failed"
+    include_examples "expect default fields with status", "retry_stopped"
 
     it "includes error" do
       expect(log_output.string).to include("error='RuntimeError: test error'")
@@ -173,7 +173,7 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
     let(:event_name) { :discard }
     before { subscriber.discard(event) }
 
-    include_examples "expect default fields with status", "failed"
+    include_examples "expect default fields with status", "discard"
 
     it "includes error" do
       expect(log_output.string).to include("error='RuntimeError: test error'")

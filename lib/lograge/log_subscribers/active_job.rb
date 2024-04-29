@@ -58,7 +58,7 @@ module Lograge
 
         processing_data event,
           initial_data(event).tap { |data|
-            data[:status] = :failed
+            data[:status] = event.name.split(".").first.to_sym
             data[:error] = "#{ex.class}: #{ex.message}" if ex
           }
       end

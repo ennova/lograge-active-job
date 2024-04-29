@@ -35,7 +35,7 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
 
   let(:event) do
     ActiveSupport::Notifications::Event.new(
-      "perform.active_job",
+      "#{event_name}.active_job",
       Time.now,
       Time.now + 1,
       1,
@@ -83,6 +83,7 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
   end
 
   context "when performed an action with lograge output" do
+    let(:event_name) { :perform }
     before { subscriber.perform(event) }
 
     include_examples "expect default fields with status", "performed"
@@ -105,6 +106,7 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
   end
 
   context "when perform started an action with lograge output" do
+    let(:event_name) { :perform_start }
     before { subscriber.perform_start(event) }
 
     include_examples "expect default fields with status", "performing"
@@ -117,6 +119,7 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
   end
 
   context "when enqueued an action with lograge output" do
+    let(:event_name) { :enqueue }
     before { subscriber.enqueue(event) }
 
     include_examples "expect default fields with status", "enqueued"
@@ -137,6 +140,7 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
   context "when enqueue retried an action with lograge output" do
     let(:payload) { {adapter: ActiveJob::QueueAdapters::AsyncAdapter.new, job: job, wait: 1, error: RuntimeError.new("test error")} }
 
+    let(:event_name) { :enqueue_retry }
     before { subscriber.enqueue_retry(event) }
 
     include_examples "expect default fields with status", "retrying"
@@ -153,6 +157,7 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
   context "when retry stopped an action with lograge output" do
     let(:payload) { super().merge(error: RuntimeError.new("test error")) }
 
+    let(:event_name) { :retry_stopped }
     before { subscriber.retry_stopped(event) }
 
     include_examples "expect default fields with status", "failed"
@@ -165,6 +170,7 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
   context "when discard an action with lograge output" do
     let(:payload) { super().merge(error: RuntimeError.new("test error")) }
 
+    let(:event_name) { :discard }
     before { subscriber.discard(event) }
 
     include_examples "expect default fields with status", "failed"

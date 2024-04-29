@@ -43,22 +43,26 @@ module Lograge
       def enqueue_retry(event)
         payload = event.payload
         wait = event.payload[:wait]
+        job = event.payload[:job]
         ex = event.payload[:error]
 
         processing_data event,
           initial_data(event).tap { |data|
             data[:status] = :retry
             data[:retry_in] = wait.to_i
+            data[:executions] = job.executions
             data[:error] = "#{ex.class}: #{ex.message}" if ex
           }
       end
 
       def retry_stopped(event)
+        job = event.payload[:job]
         ex = event.payload[:error]
 
         processing_data event,
           initial_data(event).tap { |data|
             data[:status] = event.name.split(".").first.to_sym
+            data[:executions] = job.executions
             data[:error] = "#{ex.class}: #{ex.message}" if ex
           }
       end

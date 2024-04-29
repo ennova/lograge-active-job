@@ -139,6 +139,7 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
 
   context "when enqueue retried an action with lograge output" do
     let(:payload) { {adapter: ActiveJob::QueueAdapters::AsyncAdapter.new, job: job, wait: 1, error: RuntimeError.new("test error")} }
+    let(:job) { super().tap { |job| job.executions = 2 } }
 
     let(:event_name) { :enqueue_retry }
     before { subscriber.enqueue_retry(event) }
@@ -149,6 +150,10 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
       expect(log_output.string).to include("retry_in=1")
     end
 
+    it "includes executions" do
+      expect(log_output.string).to include("executions=2")
+    end
+
     it "includes error" do
       expect(log_output.string).to include("error='RuntimeError: test error'")
     end
@@ -156,11 +161,16 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
 
   context "when retry stopped an action with lograge output" do
     let(:payload) { super().merge(error: RuntimeError.new("test error")) }
+    let(:job) { super().tap { |job| job.executions = 2 } }
 
     let(:event_name) { :retry_stopped }
     before { subscriber.retry_stopped(event) }
 
     include_examples "expect default fields with status", "retry_stopped"
+
+    it "includes executions" do
+      expect(log_output.string).to include("executions=2")
+    end
 
     it "includes error" do
       expect(log_output.string).to include("error='RuntimeError: test error'")
@@ -169,11 +179,16 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
 
   context "when discard an action with lograge output" do
     let(:payload) { super().merge(error: RuntimeError.new("test error")) }
+    let(:job) { super().tap { |job| job.executions = 2 } }
 
     let(:event_name) { :discard }
     before { subscriber.discard(event) }
 
     include_examples "expect default fields with status", "discard"
+
+    it "includes executions" do
+      expect(log_output.string).to include("executions=2")
+    end
 
     it "includes error" do
       expect(log_output.string).to include("error='RuntimeError: test error'")

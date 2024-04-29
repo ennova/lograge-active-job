@@ -49,7 +49,10 @@ module Lograge
       end
 
       def retry_stopped(event)
-        processing_data event, initial_data(event).tap { |data| data[:status] = :failed }
+        processing_data event,
+          initial_data(event).tap { |data|
+            data[:status] = :failed
+          }
       end
       alias_method :discard, :retry_stopped
 

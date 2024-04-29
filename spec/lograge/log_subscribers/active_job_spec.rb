@@ -43,7 +43,7 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
     )
   end
   let(:payload) { {adapter: ActiveJob::QueueAdapters::AsyncAdapter.new, job: job} }
-  let(:job) { UserJob.set(wait_until: Time.parse('2000-01-02T03:04:05Z')).perform_later("args", model) }
+  let(:job) { UserJob.set(wait_until: Time.parse('2000-01-02T03:04:05Z')).perform_later("args", user: model) }
   let(:model) { UserModel.new }
 
   before do
@@ -70,7 +70,7 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
     end
 
     it "includes args" do
-      expect(log_output.string).to include("args=args, #{model.to_global_id}")
+      expect(log_output.string).to include(%Q(args=["args", {"user"=>#{model.to_global_id.to_json}}]))
     end
 
     it "includes adapter" do

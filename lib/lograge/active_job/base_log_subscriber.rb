@@ -33,7 +33,7 @@ module Lograge
       end
 
       def args_info(args)
-        Array(args).any? ? args.flat_map { |arg| format(arg) }.join(", ") : ""
+        JSON.parse(format(args).to_json)
       end
 
       def format(arg)

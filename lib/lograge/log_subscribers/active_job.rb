@@ -33,7 +33,7 @@ module Lograge
         processing_data event,
           initial_data(event).tap { |data|
             data[:status] = status(event.payload, default_status: :performed)
-            data[:duration] = "#{event.duration.round(2)}ms"
+            data[:duration] = event.duration.round(2)
           }
       end
 

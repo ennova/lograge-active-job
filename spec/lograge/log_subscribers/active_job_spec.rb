@@ -88,7 +88,7 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
     include_examples "expect default fields with status", "performed"
 
     it "includes duration" do
-      expect(log_output.string).to include("duration=1000.0ms")
+      expect(log_output.string).to include("duration=1000.00")
     end
   end
 

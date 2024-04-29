@@ -86,6 +86,10 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
     before { subscriber.perform(event) }
 
     include_examples "expect default fields with status", "performed"
+
+    it "includes duration" do
+      expect(log_output.string).to include("duration=1000.0ms")
+    end
   end
 
   context "when perform started an action with lograge output" do

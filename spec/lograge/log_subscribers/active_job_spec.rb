@@ -143,7 +143,7 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
     let(:event_name) { :enqueue_retry }
     before { subscriber.enqueue_retry(event) }
 
-    include_examples "expect default fields with status", "retrying"
+    include_examples "expect default fields with status", "retry"
 
     it "includes retry_in" do
       expect(log_output.string).to include("retry_in=1")

@@ -47,7 +47,7 @@ module Lograge
 
         processing_data event,
           initial_data(event).tap { |data|
-            data[:status] = :retrying
+            data[:status] = :retry
             data[:retry_in] = wait.to_i
             data[:error] = "#{ex.class}: #{ex.message}" if ex
           }

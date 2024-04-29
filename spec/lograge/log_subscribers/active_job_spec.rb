@@ -97,6 +97,10 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
       it "includes status" do
         expect(log_output.string).to include("status=failed")
       end
+
+      it "includes error" do
+        expect(log_output.string).to include("error='RuntimeError: test error'")
+      end
     end
   end
 
@@ -131,7 +135,7 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
   end
 
   context "when enqueue retried an action with lograge output" do
-    let(:payload) { {adapter: ActiveJob::QueueAdapters::AsyncAdapter.new, job: job, wait: 1} }
+    let(:payload) { {adapter: ActiveJob::QueueAdapters::AsyncAdapter.new, job: job, wait: 1, error: RuntimeError.new("test error")} }
 
     before { subscriber.enqueue_retry(event) }
 
@@ -140,17 +144,33 @@ RSpec.describe Lograge::LogSubscribers::ActiveJob do
     it "includes retry_in" do
       expect(log_output.string).to include("retry_in=1")
     end
+
+    it "includes error" do
+      expect(log_output.string).to include("error='RuntimeError: test error'")
+    end
   end
 
   context "when retry stopped an action with lograge output" do
+    let(:payload) { super().merge(error: RuntimeError.new("test error")) }
+
     before { subscriber.retry_stopped(event) }
 
     include_examples "expect default fields with status", "failed"
+
+    it "includes error" do
+      expect(log_output.string).to include("error='RuntimeError: test error'")
+    end
   end
 
   context "when discard an action with lograge output" do
+    let(:payload) { super().merge(error: RuntimeError.new("test error")) }
+
     before { subscriber.discard(event) }
 
     include_examples "expect default fields with status", "failed"
+
+    it "includes error" do
+      expect(log_output.string).to include("error='RuntimeError: test error'")
+    end
   end
 end

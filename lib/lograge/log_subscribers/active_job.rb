@@ -30,28 +30,36 @@ module Lograge
       end
 
       def perform(event)
+        ex = event.payload[:exception_object]
+
         processing_data event,
           initial_data(event).tap { |data|
             data[:status] = status(event.payload, default_status: :performed)
             data[:duration] = event.duration.round(2)
+            data[:error] = "#{ex.class}: #{ex.message}" if ex
           }
       end
 
       def enqueue_retry(event)
         payload = event.payload
         wait = event.payload[:wait]
+        ex = event.payload[:error]
 
         processing_data event,
           initial_data(event).tap { |data|
             data[:status] = payload[:error] ? :failed : :retrying
             data[:retry_in] = wait.to_i
+            data[:error] = "#{ex.class}: #{ex.message}" if ex
           }
       end
 
       def retry_stopped(event)
+        ex = event.payload[:error]
+
         processing_data event,
           initial_data(event).tap { |data|
             data[:status] = :failed
+            data[:error] = "#{ex.class}: #{ex.message}" if ex
           }
       end
       alias_method :discard, :retry_stopped

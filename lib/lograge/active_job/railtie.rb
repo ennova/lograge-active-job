@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "rails/railtie"
 require "active_support"
 require "active_support/ordered_options"
+require "rails/railtie"
 
 module Lograge
   module ActiveJob
